@@ -18,11 +18,15 @@ public class BeanFactory {
 
         if(!ioc.containsKey(className)){
             Object obj = null;
-            try {
-                obj = Class.forName(className).newInstance();
-                ioc.put(className,obj);
-            } catch (Exception e) {
-                e.printStackTrace();
+            synchronized (BeanFactory.class){
+                if(!ioc.containsKey(className)){
+                    try {
+                        obj = Class.forName(className).newInstance();
+                        ioc.put(className,obj);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else return ioc.get(className);
             }
             return obj;
         }else{

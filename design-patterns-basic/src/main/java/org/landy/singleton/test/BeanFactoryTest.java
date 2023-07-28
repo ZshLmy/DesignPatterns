@@ -14,6 +14,7 @@ public class BeanFactoryTest {
 
         //发令枪，我就能想到运动员
         CountDownLatch latch = new CountDownLatch(count);
+        CountDownLatch latch2 = new CountDownLatch(count);
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < count;i ++) {
@@ -34,7 +35,7 @@ public class BeanFactoryTest {
                         //必然会调用，可能会有很多线程同时去访问getInstance()
                         Object obj = BeanFactory.getBean("org.landy.singleton.register.pojo.Pojo");
                         System.out.println(System.currentTimeMillis() + ":" + obj);
-
+                        latch2.countDown();
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -44,6 +45,11 @@ public class BeanFactoryTest {
             //每次启动一个线程，count --
             latch.countDown();
 
+        }
+        try {
+            latch2.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         long end = System.currentTimeMillis();
         System.out.println("总耗时：" + (end - start));
